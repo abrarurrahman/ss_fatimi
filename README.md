@@ -38,3 +38,18 @@ Volumes without finished cover art render a typographic cover automatically: set
 
 Source material (WhatsApp exports, personal photographs, unpublished drafts) is kept
 **outside** this repository and is deliberately not committed.
+
+## After you push
+
+GitHub Pages rebuilds automatically on every push to `main` (usually under a
+minute). It serves assets with `Cache-Control: max-age=600`, so a browser that
+already visited can keep running the old `styles.css` / `script.js` for up to
+ten minutes.
+
+`index.html` therefore links them with a version query — `styles.css?v=2`,
+`script.js?v=2`. **Bump that number whenever you change either file** and every
+visitor gets the new copy immediately.
+
+To check what is actually live rather than what is cached, hard-refresh
+(Ctrl+Shift+R) or open the URL with a throwaway query, e.g.
+`https://abrarurrahman.github.io/ss_fatimi/?x=1`.

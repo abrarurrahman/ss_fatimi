@@ -265,7 +265,13 @@ function fitCanvas(canvas, ctx){
   let hover = null, hoverIndex = -1;
   let pointerX = 0, pointerY = 0, driftX = 0, driftY = 0;
 
+  let lastW = -1, lastH = -1;
   function size(){
+    const rect = canvas.getBoundingClientRect();
+    const rw = Math.round(rect.width), rh = Math.round(rect.height);
+    if (rw === lastW && rh === lastH) return;   // nothing changed; keep the dust
+    lastW = rw; lastH = rh;
+
     ({w, h} = fitCanvas(canvas, ctx));
     R = Math.max(140, Math.min(w * 0.27, h * 0.40));
     dust = Array.from({length: Math.round(Math.min(150, (w * h) / 9000))}, () => ({
@@ -295,6 +301,8 @@ function fitCanvas(canvas, ctx){
   }
 
   function draw(){
+    // The hero may not have laid out yet; re-measure until it has.
+    if (!w || !h){ size(); if (!w || !h) return; }
     anchor();
     if (!dragging) targetY += 0.0021;
     rotX   += (targetX - rotX) * .07;
@@ -476,11 +484,18 @@ function fitCanvas(canvas, ctx){
   if (reduceMotion) draw();
   else whileVisible(canvas, draw);
 
-  let t;
-  window.addEventListener("resize", () => {
-    clearTimeout(t);
-    t = setTimeout(() => { size(); if (reduceMotion) draw(); }, 180);
-  });
+  /* A window resize does not always follow the element changing size — a
+     background tab, a collapsed pane, a late first paint. Watch the canvas
+     itself so a zero-width start always recovers. */
+  if ("ResizeObserver" in window){
+    new ResizeObserver(() => { size(); if (reduceMotion) draw(); }).observe(canvas);
+  } else {
+    let t;
+    window.addEventListener("resize", () => {
+      clearTimeout(t);
+      t = setTimeout(() => { size(); if (reduceMotion) draw(); }, 180);
+    });
+  }
 })();
 
 /* ── Cards lean toward the cursor ─────────────────────────────────────── */
