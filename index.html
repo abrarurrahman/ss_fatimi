@@ -34,10 +34,12 @@
 
   <!-- ───────────────────────────── HERO ───────────────────────────── -->
   <section class="hero band band--ink" id="top">
-    <canvas class="starfield" id="starfield" aria-hidden="true"></canvas>
+    <canvas class="heroCanvas" id="heroConstellation" aria-label="The twelve volumes orbiting as a constellation around the author's portrait"></canvas>
+    <div class="constellationTip" id="constellationTip" hidden></div>
     <div class="heroGlow" aria-hidden="true"></div>
     <div class="shell heroInner">
       <div class="heroPortrait reveal" data-d="1">
+        <span class="portraitOrbit" aria-hidden="true"></span>
         <div class="portraitArch">
           <img src="assets/portrait.jpg" alt="Portrait of Professor Syed Shams-un-Nazar Fatimi">
         </div>
@@ -52,6 +54,7 @@
           <a class="btn btn--gold" href="#works">Enter the series</a>
           <a class="btn btn--ghost" href="#contact">Write to him</a>
         </div>
+        <p class="heroHint reveal" data-d="5"><span>Twelve volumes orbit him</span><i>·</i><span>drag to turn the figure</span><i>·</i><span>choose a star</span></p>
       </div>
     </div>
     <a class="scrollHint" href="#prayer" aria-label="Scroll down"><span></span></a>
@@ -122,21 +125,6 @@
       <div class="seriesIndexWrap reveal">
         <p class="eyebrow">The complete series</p>
         <ol class="seriesIndex" id="seriesIndex"></ol>
-      </div>
-    </div>
-  </section>
-
-  <!-- ─────────────────────────── CONSTELLATION ────────────────────────── -->
-  <section class="constellation band band--ink" id="constellation">
-    <div class="shell">
-      <header class="sectionHeader onInk reveal">
-        <div><p class="eyebrow">The series as one figure</p><h2>A constellation of <em>volumes</em></h2></div>
-        <p>Twelve volumes turning around a single question. Drag to rotate the figure; choose a star to open its volume.</p>
-      </header>
-      <div class="constellationStage reveal" data-d="1">
-        <canvas id="constellationCanvas" aria-label="A rotating three-dimensional constellation of the twelve volumes"></canvas>
-        <div class="constellationTip" id="constellationTip" hidden></div>
-        <p class="constellationHint"><span>Drag to rotate</span><i>·</i><span>Click a star to open that volume</span></p>
       </div>
     </div>
   </section>

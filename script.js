@@ -221,166 +221,143 @@ function fitCanvas(canvas, ctx){
   return {w: rect.width, h: rect.height};
 }
 
-/* ── Hero starfield, in depth ─────────────────────────────────────────────
-   Stars sit in a 3D box and drift toward the viewer, so the field has
-   parallax rather than being a flat sheet of dots.                          */
-(function starfield(){
-  const canvas = $("starfield");
-  if (!canvas || reduceMotion) return;
-  const ctx = canvas.getContext("2d");
-
-  let stars = [], w = 0, h = 0, rotY = 0;
-  let pointerX = 0, pointerY = 0, driftX = 0, driftY = 0;
-
-  const SPREAD = 1100;
-
-  function seed(){
-    ({w, h} = fitCanvas(canvas, ctx));
-    const count = Math.round(Math.min(220, (w * h) / 6200));
-    stars = Array.from({length: count}, () => ({
-      x: (Math.random() - .5) * SPREAD * 2,
-      y: (Math.random() - .5) * SPREAD * 1.2,
-      z: Math.random() * SPREAD,
-      r: Math.random() * 1.5 + .35,
-      a: Math.random() * .55 + .2,
-      tw: Math.random() * .015 + .004,
-      ph: Math.random() * Math.PI * 2
-    }));
-  }
-
-  function draw(){
-    ctx.clearRect(0, 0, w, h);
-    rotY += 0.00035;
-    driftX += (pointerX - driftX) * .04;
-    driftY += (pointerY - driftY) * .04;
-
-    const cx = w / 2 + driftX * 26;
-    const cy = h / 2 + driftY * 18;
-
-    for (const s of stars){
-      s.z -= 0.32;
-      if (s.z < -FOV * 0.6){ s.z = SPREAD; s.x = (Math.random() - .5) * SPREAD * 2; s.y = (Math.random() - .5) * SPREAD * 1.2; }
-      s.ph += s.tw;
-
-      const p = project(s, driftY * 0.12, rotY + driftX * 0.12, cx, cy);
-      if (p.k <= 0) continue;
-
-      const alpha = s.a * (.5 + .5 * Math.sin(s.ph)) * Math.min(1, p.k * 1.1);
-      const r = Math.max(.2, s.r * p.k);
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(226,205,154,${alpha.toFixed(3)})`;
-      ctx.fill();
-    }
-  }
-
-  seed();
-  whileVisible(canvas, draw);
-
-  window.addEventListener("pointermove", e => {
-    pointerX = (e.clientX / window.innerWidth  - .5) * 2;
-    pointerY = (e.clientY / window.innerHeight - .5) * 2;
-  }, {passive: true});
-
-  let t;
-  window.addEventListener("resize", () => { clearTimeout(t); t = setTimeout(seed, 180); });
-})();
-
-/* ── The constellation ────────────────────────────────────────────────────
-   The twelve volumes as nodes on a sphere around a central question, drawn
-   with depth sorting so near stars occlude far ones. Drag to rotate, click
-   a star to open that volume.                                               */
-(function constellation(){
-  const canvas = $("constellationCanvas");
-  const stage  = document.querySelector(".constellationStage");
-  const tip    = $("constellationTip");
-  if (!canvas || !stage) return;
+/* ── The hero constellation ───────────────────────────────────────────────
+   The twelve volumes orbit the portrait in 3D. The portrait is the nucleus:
+   the core node is anchored to its centre, so every edge radiates from
+   behind him. Drag to turn the figure, hover a star for its volume, click to
+   open it. Faint star dust sits further back for depth.                     */
+(function heroConstellation(){
+  const canvas   = $("heroConstellation");
+  const hero     = document.querySelector(".hero");
+  const portrait = document.querySelector(".portraitArch");
+  const tip      = $("constellationTip");
+  if (!canvas || !hero || !portrait) return;
 
   const ctx = canvas.getContext("2d");
-  let w = 0, h = 0, R = 240;
+  let w = 0, h = 0, R = 240, cx = 0, cy = 0;
 
   // Fibonacci sphere: an even scatter, no clumping at the poles.
   const nodes = books.map((book, i) => {
     const n = books.length;
-    const y = 1 - (i / (n - 1)) * 2;
-    const rad = Math.sqrt(Math.max(0, 1 - y * y));
+    const uy = 1 - (i / (n - 1)) * 2;
+    const rad = Math.sqrt(Math.max(0, 1 - uy * uy));
     const theta = Math.PI * (1 + Math.sqrt(5)) * i;
     return {
-      ux: Math.cos(theta) * rad, uy: y, uz: Math.sin(theta) * rad,
-      x: 0, y: 0, z: 0, book, index: i, pulse: Math.random() * Math.PI * 2
+      ux: Math.cos(theta) * rad, uy, uz: Math.sin(theta) * rad,
+      x: 0, y: 0, z: 0, k: 1, book, index: i, pulse: Math.random() * Math.PI * 2
     };
   });
-  const core = {ux: 0, uy: 0, uz: 0, x: 0, y: 0, z: 0, core: true};
+  const core = {x: 0, y: 0, z: 0, k: 1};
 
   // Every volume answers to the centre; the ring and its chords bind them.
   const edges = [];
-  nodes.forEach(n => edges.push([core, n, .16]));
+  nodes.forEach(n => edges.push([core, n, .2]));
   for (let i = 0; i < nodes.length; i++){
-    edges.push([nodes[i], nodes[(i + 1) % nodes.length], .3]);
-    if (i < nodes.length / 2) edges.push([nodes[i], nodes[(i + 5) % nodes.length], .12]);
+    edges.push([nodes[i], nodes[(i + 1) % nodes.length], .26]);
+    if (i < nodes.length / 2) edges.push([nodes[i], nodes[(i + 5) % nodes.length], .1]);
   }
 
-  let rotX = -0.22, rotY = 0, targetX = -0.22, targetY = 0;
+  let dust = [];
+  const DUST_SPREAD = 1500;
+
+  let rotX = -0.2, rotY = 0, targetX = -0.2, targetY = 0;
   let dragging = false, moved = false, lastX = 0, lastY = 0;
   let hover = null, hoverIndex = -1;
+  let pointerX = 0, pointerY = 0, driftX = 0, driftY = 0;
 
   function size(){
     ({w, h} = fitCanvas(canvas, ctx));
-    R = Math.min(w, h) * 0.42;
+    R = Math.max(140, Math.min(w * 0.27, h * 0.40));
+    dust = Array.from({length: Math.round(Math.min(150, (w * h) / 9000))}, () => ({
+      x: (Math.random() - .5) * DUST_SPREAD * 2,
+      y: (Math.random() - .5) * DUST_SPREAD * 1.2,
+      z: Math.random() * DUST_SPREAD,
+      r: Math.random() * 1.3 + .3,
+      a: Math.random() * .4 + .12,
+      tw: Math.random() * .014 + .004,
+      ph: Math.random() * Math.PI * 2
+    }));
+  }
+
+  /* The nucleus follows the portrait, so the figure is always centred on him.
+     It leans a little toward the open side and is clamped to the viewport, so
+     no star drifts off the edge where it could not be clicked. */
+  function anchor(){
+    const cr = canvas.getBoundingClientRect();
+    const pr = portrait.getBoundingClientRect();
+    const px = pr.left - cr.left + pr.width  / 2;
+    const py = pr.top  - cr.top  + pr.height / 2;
+
+    const bias = w > 900 ? R * 0.22 : 0;     // only when the layout is two-column
+    const margin = R * 0.66;
+    cx = Math.min(Math.max(px + bias, margin), w - margin);
+    cy = Math.min(Math.max(py, margin * 0.8), h - margin * 0.8);
   }
 
   function draw(){
-    if (!dragging) targetY += 0.0022;
-    rotX += (targetX - rotX) * .07;
-    rotY += (targetY - rotY) * .07;
+    anchor();
+    if (!dragging) targetY += 0.0021;
+    rotX   += (targetX - rotX) * .07;
+    rotY   += (targetY - rotY) * .07;
+    driftX += (pointerX - driftX) * .04;
+    driftY += (pointerY - driftY) * .04;
+
+    const px = rotX + driftY * 0.06;
+    const py = rotY + driftX * 0.06;
 
     ctx.clearRect(0, 0, w, h);
-    const cx = w / 2, cy = h / 2;
 
-    // Place everything for this frame.
+    // Star dust, furthest back.
+    for (const s of dust){
+      s.z -= .3;
+      if (s.z < -FOV * .6){
+        s.z = DUST_SPREAD;
+        s.x = (Math.random() - .5) * DUST_SPREAD * 2;
+        s.y = (Math.random() - .5) * DUST_SPREAD * 1.2;
+      }
+      s.ph += s.tw;
+      const p = project(s, driftY * .1, py, w / 2, h / 2);
+      if (p.k <= 0) continue;
+      const alpha = s.a * (.5 + .5 * Math.sin(s.ph)) * Math.min(1, p.k * 1.1);
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, Math.max(.2, s.r * p.k), 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(226,205,154,${alpha.toFixed(3)})`;
+      ctx.fill();
+    }
+
+    // Place the figure for this frame.
     for (const n of nodes){
-      const p = project({x: n.ux * R, y: n.uy * R, z: n.uz * R}, rotX, rotY, cx, cy);
+      const p = project({x: n.ux * R, y: n.uy * R, z: n.uz * R}, px, py, cx, cy);
       n.x = p.x; n.y = p.y; n.z = p.z; n.k = p.k;
     }
-    const cp = project({x: 0, y: 0, z: 0}, rotX, rotY, cx, cy);
-    core.x = cp.x; core.y = cp.y; core.z = cp.z; core.k = cp.k;
+    core.x = cx; core.y = cy; core.z = 0; core.k = 1;
 
-    // Edges first, faded by depth.
+    // Edges, faded by depth. Those behind the portrait are hidden by it.
     for (const [a, b, base] of edges){
       const depth = (a.k + b.k) / 2;
       const lit = hover && (a === hover || b === hover);
-      const alpha = Math.max(0, base * depth * (lit ? 3.4 : 1));
+      const alpha = Math.max(0, base * depth * (lit ? 3.2 : 1));
       if (alpha < .012) continue;
       ctx.beginPath();
       ctx.moveTo(a.x, a.y);
       ctx.lineTo(b.x, b.y);
-      ctx.strokeStyle = `rgba(201,169,97,${Math.min(.85, alpha).toFixed(3)})`;
-      ctx.lineWidth = lit ? 1.15 : .7;
+      ctx.strokeStyle = `rgba(201,169,97,${Math.min(.8, alpha).toFixed(3)})`;
+      ctx.lineWidth = lit ? 1.15 : .65;
       ctx.stroke();
     }
 
-    // The centre: the question the series turns around.
-    const coreR = 5 * core.k;
-    const glow = ctx.createRadialGradient(core.x, core.y, 0, core.x, core.y, coreR * 9);
-    glow.addColorStop(0, "rgba(226,205,154,.55)");
-    glow.addColorStop(1, "rgba(226,205,154,0)");
-    ctx.fillStyle = glow;
-    ctx.beginPath(); ctx.arc(core.x, core.y, coreR * 9, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.arc(core.x, core.y, coreR, 0, Math.PI * 2);
-    ctx.fillStyle = "#f2e6c8"; ctx.fill();
-
-    // Nodes, far to near, so the near ones sit on top.
+    // Nodes, far to near.
     const sorted = [...nodes].sort((a, b) => b.z - a.z);
     for (const n of sorted){
       n.pulse += .02;
-      const isHover = n === hover;
+      const isHover  = n === hover;
       const isActive = n.index === active;
       const depth = Math.min(1, Math.max(.25, n.k));
-      const r = (isHover ? 8.5 : isActive ? 7 : 4.6) * depth * (1 + .06 * Math.sin(n.pulse));
+      const r = (isHover ? 8 : isActive ? 6.6 : 4.3) * depth * (1 + .06 * Math.sin(n.pulse));
 
       if (isHover || isActive){
         const g = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, r * 6);
-        g.addColorStop(0, `rgba(226,205,154,${isHover ? .5 : .3})`);
+        g.addColorStop(0, `rgba(226,205,154,${isHover ? .5 : .28})`);
         g.addColorStop(1, "rgba(226,205,154,0)");
         ctx.fillStyle = g;
         ctx.beginPath(); ctx.arc(n.x, n.y, r * 6, 0, Math.PI * 2); ctx.fill();
@@ -390,21 +367,20 @@ function fitCanvas(canvas, ctx){
       ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
       ctx.fillStyle = isHover || isActive
         ? "rgba(248,240,220,.98)"
-        : `rgba(201,169,97,${(.45 + .5 * depth).toFixed(3)})`;
+        : `rgba(201,169,97,${(.4 + .5 * depth).toFixed(3)})`;
       ctx.fill();
 
       if (isActive && !isHover){
         ctx.beginPath();
         ctx.arc(n.x, n.y, r + 6 * depth, 0, Math.PI * 2);
-        ctx.strokeStyle = "rgba(201,169,97,.65)";
+        ctx.strokeStyle = "rgba(201,169,97,.6)";
         ctx.lineWidth = 1;
         ctx.stroke();
       }
 
-      // Roman numeral, only on stars facing us.
-      if (depth > .72){
+      if (depth > .74){
         ctx.font = `${Math.round(10 * depth)}px Inter, system-ui, sans-serif`;
-        ctx.fillStyle = `rgba(226,205,154,${((depth - .72) * 2.6).toFixed(3)})`;
+        ctx.fillStyle = `rgba(226,205,154,${((depth - .74) * 2.8).toFixed(3)})`;
         ctx.textAlign = "left";
         ctx.fillText(n.book.roman, n.x + r + 7, n.y + 3.5);
       }
@@ -427,14 +403,25 @@ function fitCanvas(canvas, ctx){
       `<span class="tipNum">${n.book.volume}</span>` +
       `<span class="tipTitle">${n.book.title}</span>` +
       `<span class="tipTag">${n.book.tagline}</span>`;
-    tip.style.left = `${n.x}px`;
-    tip.style.top  = `${n.y}px`;
+    placeTip(n);
     tip.classList.add("show");
+  }
+
+  /* Keep the tooltip inside the hero: flip it below a high star, and never
+     let it hang off the left or right edge. */
+  function placeTip(n){
+    const tw = tip.offsetWidth, th = tip.offsetHeight;
+    tip.classList.toggle("below", n.y - th - 18 < 6);
+    tip.style.left = `${Math.min(Math.max(n.x, tw / 2 + 10), w - tw / 2 - 10)}px`;
+    tip.style.top  = `${n.y}px`;
   }
 
   canvas.addEventListener("pointermove", e => {
     const rect = canvas.getBoundingClientRect();
     const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+
+    pointerX = (mx / rect.width  - .5) * 2;
+    pointerY = (my / rect.height - .5) * 2;
 
     if (dragging){
       const dx = e.clientX - lastX, dy = e.clientY - lastY;
@@ -451,23 +438,23 @@ function fitCanvas(canvas, ctx){
       hoverIndex = n ? n.index : -1;
       canvas.style.cursor = n ? "pointer" : "grab";
       showTip(n);
-    } else if (n) {
-      tip.style.left = `${n.x}px`;
-      tip.style.top  = `${n.y}px`;
+    } else if (n){
+      placeTip(n);
     }
   });
 
   canvas.addEventListener("pointerdown", e => {
     dragging = true; moved = false;
     lastX = e.clientX; lastY = e.clientY;
-    stage.classList.add("is-dragging");
+    hero.classList.add("is-dragging");
     try { canvas.setPointerCapture(e.pointerId); } catch {}
   });
 
   function endDrag(){
     dragging = false;
-    stage.classList.remove("is-dragging");
+    hero.classList.remove("is-dragging");
   }
+
   canvas.addEventListener("pointerup", e => {
     endDrag();
     if (!moved && hoverIndex >= 0){
@@ -486,11 +473,8 @@ function fitCanvas(canvas, ctx){
   });
 
   size();
-  if (reduceMotion){
-    draw();                       // one static frame
-  } else {
-    whileVisible(canvas, draw);
-  }
+  if (reduceMotion) draw();
+  else whileVisible(canvas, draw);
 
   let t;
   window.addEventListener("resize", () => {

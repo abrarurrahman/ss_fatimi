@@ -168,17 +168,23 @@ h2 em{font-style:italic;color:var(--gold-deep)}
   display:flex;align-items:center;overflow:hidden;
   padding:90px 0 120px;
 }
-.starfield{position:absolute;inset:0;width:100%;height:100%;opacity:.65;pointer-events:none}
+/* The constellation is the hero's ground layer and takes the pointer;
+   the copy above it opts out so stars stay draggable through the text. */
+.heroCanvas{position:absolute;inset:0;width:100%;height:100%;z-index:1;cursor:grab;touch-action:pan-y}
+.hero.is-dragging .heroCanvas{cursor:grabbing}
+.heroGlow{z-index:0}
 .heroGlow{
   position:absolute;left:50%;top:42%;width:120vw;height:80vh;
   transform:translate(-50%,-50%);pointer-events:none;
   background:radial-gradient(ellipse at center, rgba(201,169,97,.13), transparent 62%);
 }
 .heroInner{
-  position:relative;z-index:2;
+  position:relative;z-index:2;pointer-events:none;
   display:grid;grid-template-columns:320px 1fr;
   align-items:center;gap:clamp(48px,7vw,110px);
 }
+/* Only the things you actually click take the pointer back. */
+.heroInner a,.heroInner button{pointer-events:auto}
 .heroPortrait{position:relative}
 .portraitArch{
   width:290px;aspect-ratio:4/5;overflow:hidden;
@@ -539,7 +545,8 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offse
   html{scroll-behavior:auto}
   *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
   .reveal{opacity:1;transform:none}
-  .starfield{display:none}
+  /* The constellation stays, but the script draws it once and stops. */
+  .portraitOrbit{animation:none}
 }
 
 /* ==========================================================================
@@ -680,30 +687,10 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offse
 }
 
 /* ==========================================================================
-   The constellation — a 3D figure of the twelve volumes
+   Constellation tooltip (used by the hero figure)
    ========================================================================== */
-.constellation{padding:clamp(80px,10vw,130px) 0;overflow:hidden}
-.constellationStage{
-  position:relative;height:min(640px,74vh);min-height:420px;
-  border:1px solid var(--rule-i);background:
-    radial-gradient(ellipse at 50% 45%, rgba(201,169,97,.07), transparent 62%),
-    var(--ink-2);
-  cursor:grab;touch-action:pan-y;user-select:none;
-  transition:border-color .5s var(--ease),box-shadow .5s var(--ease);
-}
-.constellationStage:hover{border-color:rgba(201,169,97,.42);box-shadow:0 30px 90px rgba(0,0,0,.45)}
-.constellationStage.is-dragging{cursor:grabbing}
-.constellationStage canvas{display:block;width:100%;height:100%}
-
-/* corner brackets, like plate corners on an astrolabe */
-.constellationStage::before,.constellationStage::after{
-  content:"";position:absolute;width:26px;height:26px;pointer-events:none;opacity:.55;
-}
-.constellationStage::before{left:14px;top:14px;border-left:1px solid var(--gold);border-top:1px solid var(--gold)}
-.constellationStage::after{right:14px;bottom:14px;border-right:1px solid var(--gold);border-bottom:1px solid var(--gold)}
-
 .constellationTip{
-  position:absolute;z-index:3;pointer-events:none;max-width:280px;
+  position:absolute;z-index:5;pointer-events:none;max-width:290px;
   padding:13px 17px;background:rgba(10,20,17,.95);
   border:1px solid rgba(201,169,97,.5);
   box-shadow:0 18px 50px rgba(0,0,0,.6);
@@ -723,18 +710,30 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offse
   font-size:13px;color:var(--muted-i);
 }
 
-.constellationHint{
-  position:absolute;left:0;right:0;bottom:18px;margin:0;text-align:center;
-  font-family:var(--ui);font-size:9.5px;letter-spacing:.24em;text-transform:uppercase;
-  color:var(--muted-i);opacity:.6;transition:opacity .4s var(--ease);
+/* ── The portrait as the nucleus ──────────────────────────────────────── */
+.portraitOrbit{
+  position:absolute;left:50%;top:50%;width:118%;aspect-ratio:1;
+  transform:translate(-50%,-50%);border-radius:50%;pointer-events:none;
+  border:1px solid rgba(201,169,97,.16);
+  box-shadow:0 0 90px 24px rgba(201,169,97,.07) inset;
+  animation:orbitBreathe 7s var(--ease) infinite;
 }
-.constellationStage:hover .constellationHint{opacity:.9}
-.constellationHint i{margin:0 12px;color:var(--gold);font-style:normal}
+@keyframes orbitBreathe{
+  0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.75}
+  50%    {transform:translate(-50%,-50%) scale(1.045);opacity:1}
+}
 
+/* ── Hero hint line ───────────────────────────────────────────────────── */
+.heroHint{
+  margin:26px 0 0;font-family:var(--ui);font-size:9.5px;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--muted-i);opacity:.55;
+  transition:opacity .4s var(--ease);
+}
+.hero:hover .heroHint{opacity:.85}
+.heroHint i{margin:0 10px;color:var(--gold);font-style:normal}
 @media(max-width:760px){
-  .constellationStage{height:min(480px,68vh)}
-  .constellationHint span:last-child{display:none}
-  .constellationHint i{display:none}
+  .heroHint span:nth-child(3),.heroHint span:nth-child(5),
+  .heroHint i{display:none}
 }
 
 /* ==========================================================================
@@ -744,3 +743,5 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offse
 .themeCard > *,.note > *{transform:translateZ(0.01px)}
 .tiltReady{transition:transform .5s var(--ease),background .45s var(--ease),box-shadow .45s var(--ease)}
 .tiltReady.is-tilting{transition:transform .12s linear,background .45s var(--ease),box-shadow .45s var(--ease)}
+
+.constellationTip.below{transform:translate(-50%,18px)}
