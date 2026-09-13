@@ -182,64 +182,345 @@ copyBtn.addEventListener("click", async () => {
   copyBtn._t = setTimeout(() => copyNote.classList.remove("show"), 3200);
 });
 
-/* ── Hero starfield ───────────────────────────────────────────────────── */
+/* ── Shared 3D helper ─────────────────────────────────────────────────────
+   A tiny perspective projector. Rotates a point about Y then X and divides
+   by depth. Enough for a starfield and a node graph; no library needed.     */
+const FOV = 760;
+function project(p, rotX, rotY, cx, cy){
+  const cosY = Math.cos(rotY), sinY = Math.sin(rotY);
+  const x1 =  p.x * cosY - p.z * sinY;
+  const z1 =  p.x * sinY + p.z * cosY;
+
+  const cosX = Math.cos(rotX), sinX = Math.sin(rotX);
+  const y1 =  p.y * cosX - z1 * sinX;
+  const z2 =  p.y * sinX + z1 * cosX;
+
+  const k = FOV / (FOV + z2);
+  return {x: cx + x1 * k, y: cy + y1 * k, z: z2, k};
+}
+
+/* Runs a canvas animation only while it is on screen. */
+function whileVisible(canvas, draw){
+  let raf = null;
+  const loop = () => { draw(); raf = requestAnimationFrame(loop); };
+  const start = () => { if (!raf) loop(); };
+  const stop  = () => { if (raf){ cancelAnimationFrame(raf); raf = null; } };
+  if ("IntersectionObserver" in window){
+    new IntersectionObserver(([e]) => e.isIntersecting ? start() : stop(), {threshold: 0}).observe(canvas);
+  } else start();
+  return {start, stop};
+}
+
+/* Sizes a canvas to its CSS box at device resolution. */
+function fitCanvas(canvas, ctx){
+  const dpr  = Math.min(window.devicePixelRatio || 1, 2);
+  const rect = canvas.getBoundingClientRect();
+  canvas.width  = Math.max(1, Math.round(rect.width  * dpr));
+  canvas.height = Math.max(1, Math.round(rect.height * dpr));
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return {w: rect.width, h: rect.height};
+}
+
+/* ── Hero starfield, in depth ─────────────────────────────────────────────
+   Stars sit in a 3D box and drift toward the viewer, so the field has
+   parallax rather than being a flat sheet of dots.                          */
 (function starfield(){
   const canvas = $("starfield");
   if (!canvas || reduceMotion) return;
-
   const ctx = canvas.getContext("2d");
-  let stars = [], w = 0, h = 0, raf;
 
-  function size(){
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const rect = canvas.getBoundingClientRect();
-    w = rect.width; h = rect.height;
-    canvas.width = w * dpr; canvas.height = h * dpr;
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  let stars = [], w = 0, h = 0, rotY = 0;
+  let pointerX = 0, pointerY = 0, driftX = 0, driftY = 0;
 
-    const count = Math.round(Math.min(150, (w * h) / 9000));
+  const SPREAD = 1100;
+
+  function seed(){
+    ({w, h} = fitCanvas(canvas, ctx));
+    const count = Math.round(Math.min(220, (w * h) / 6200));
     stars = Array.from({length: count}, () => ({
-      x: Math.random() * w,
-      y: Math.random() * h,
-      r: Math.random() * 1.25 + .25,
-      a: Math.random() * .6 + .15,
-      s: Math.random() * .012 + .003,      // twinkle speed
-      p: Math.random() * Math.PI * 2,      // phase
-      d: Math.random() * .05 + .01         // slow drift
+      x: (Math.random() - .5) * SPREAD * 2,
+      y: (Math.random() - .5) * SPREAD * 1.2,
+      z: Math.random() * SPREAD,
+      r: Math.random() * 1.5 + .35,
+      a: Math.random() * .55 + .2,
+      tw: Math.random() * .015 + .004,
+      ph: Math.random() * Math.PI * 2
     }));
   }
 
-  function frame(){
+  function draw(){
     ctx.clearRect(0, 0, w, h);
-    for (const st of stars){
-      st.p += st.s;
-      st.y -= st.d;
-      if (st.y < -2) st.y = h + 2;
-      const alpha = st.a * (0.55 + 0.45 * Math.sin(st.p));
+    rotY += 0.00035;
+    driftX += (pointerX - driftX) * .04;
+    driftY += (pointerY - driftY) * .04;
+
+    const cx = w / 2 + driftX * 26;
+    const cy = h / 2 + driftY * 18;
+
+    for (const s of stars){
+      s.z -= 0.32;
+      if (s.z < -FOV * 0.6){ s.z = SPREAD; s.x = (Math.random() - .5) * SPREAD * 2; s.y = (Math.random() - .5) * SPREAD * 1.2; }
+      s.ph += s.tw;
+
+      const p = project(s, driftY * 0.12, rotY + driftX * 0.12, cx, cy);
+      if (p.k <= 0) continue;
+
+      const alpha = s.a * (.5 + .5 * Math.sin(s.ph)) * Math.min(1, p.k * 1.1);
+      const r = Math.max(.2, s.r * p.k);
       ctx.beginPath();
-      ctx.arc(st.x, st.y, st.r, 0, Math.PI * 2);
+      ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
       ctx.fillStyle = `rgba(226,205,154,${alpha.toFixed(3)})`;
       ctx.fill();
     }
-    raf = requestAnimationFrame(frame);
   }
 
-  size();
-  frame();
+  seed();
+  whileVisible(canvas, draw);
 
-  let resizeT;
-  window.addEventListener("resize", () => {
-    clearTimeout(resizeT);
-    resizeT = setTimeout(size, 180);
+  window.addEventListener("pointermove", e => {
+    pointerX = (e.clientX / window.innerWidth  - .5) * 2;
+    pointerY = (e.clientY / window.innerHeight - .5) * 2;
+  }, {passive: true});
+
+  let t;
+  window.addEventListener("resize", () => { clearTimeout(t); t = setTimeout(seed, 180); });
+})();
+
+/* ── The constellation ────────────────────────────────────────────────────
+   The twelve volumes as nodes on a sphere around a central question, drawn
+   with depth sorting so near stars occlude far ones. Drag to rotate, click
+   a star to open that volume.                                               */
+(function constellation(){
+  const canvas = $("constellationCanvas");
+  const stage  = document.querySelector(".constellationStage");
+  const tip    = $("constellationTip");
+  if (!canvas || !stage) return;
+
+  const ctx = canvas.getContext("2d");
+  let w = 0, h = 0, R = 240;
+
+  // Fibonacci sphere: an even scatter, no clumping at the poles.
+  const nodes = books.map((book, i) => {
+    const n = books.length;
+    const y = 1 - (i / (n - 1)) * 2;
+    const rad = Math.sqrt(Math.max(0, 1 - y * y));
+    const theta = Math.PI * (1 + Math.sqrt(5)) * i;
+    return {
+      ux: Math.cos(theta) * rad, uy: y, uz: Math.sin(theta) * rad,
+      x: 0, y: 0, z: 0, book, index: i, pulse: Math.random() * Math.PI * 2
+    };
+  });
+  const core = {ux: 0, uy: 0, uz: 0, x: 0, y: 0, z: 0, core: true};
+
+  // Every volume answers to the centre; the ring and its chords bind them.
+  const edges = [];
+  nodes.forEach(n => edges.push([core, n, .16]));
+  for (let i = 0; i < nodes.length; i++){
+    edges.push([nodes[i], nodes[(i + 1) % nodes.length], .3]);
+    if (i < nodes.length / 2) edges.push([nodes[i], nodes[(i + 5) % nodes.length], .12]);
+  }
+
+  let rotX = -0.22, rotY = 0, targetX = -0.22, targetY = 0;
+  let dragging = false, moved = false, lastX = 0, lastY = 0;
+  let hover = null, hoverIndex = -1;
+
+  function size(){
+    ({w, h} = fitCanvas(canvas, ctx));
+    R = Math.min(w, h) * 0.42;
+  }
+
+  function draw(){
+    if (!dragging) targetY += 0.0022;
+    rotX += (targetX - rotX) * .07;
+    rotY += (targetY - rotY) * .07;
+
+    ctx.clearRect(0, 0, w, h);
+    const cx = w / 2, cy = h / 2;
+
+    // Place everything for this frame.
+    for (const n of nodes){
+      const p = project({x: n.ux * R, y: n.uy * R, z: n.uz * R}, rotX, rotY, cx, cy);
+      n.x = p.x; n.y = p.y; n.z = p.z; n.k = p.k;
+    }
+    const cp = project({x: 0, y: 0, z: 0}, rotX, rotY, cx, cy);
+    core.x = cp.x; core.y = cp.y; core.z = cp.z; core.k = cp.k;
+
+    // Edges first, faded by depth.
+    for (const [a, b, base] of edges){
+      const depth = (a.k + b.k) / 2;
+      const lit = hover && (a === hover || b === hover);
+      const alpha = Math.max(0, base * depth * (lit ? 3.4 : 1));
+      if (alpha < .012) continue;
+      ctx.beginPath();
+      ctx.moveTo(a.x, a.y);
+      ctx.lineTo(b.x, b.y);
+      ctx.strokeStyle = `rgba(201,169,97,${Math.min(.85, alpha).toFixed(3)})`;
+      ctx.lineWidth = lit ? 1.15 : .7;
+      ctx.stroke();
+    }
+
+    // The centre: the question the series turns around.
+    const coreR = 5 * core.k;
+    const glow = ctx.createRadialGradient(core.x, core.y, 0, core.x, core.y, coreR * 9);
+    glow.addColorStop(0, "rgba(226,205,154,.55)");
+    glow.addColorStop(1, "rgba(226,205,154,0)");
+    ctx.fillStyle = glow;
+    ctx.beginPath(); ctx.arc(core.x, core.y, coreR * 9, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(core.x, core.y, coreR, 0, Math.PI * 2);
+    ctx.fillStyle = "#f2e6c8"; ctx.fill();
+
+    // Nodes, far to near, so the near ones sit on top.
+    const sorted = [...nodes].sort((a, b) => b.z - a.z);
+    for (const n of sorted){
+      n.pulse += .02;
+      const isHover = n === hover;
+      const isActive = n.index === active;
+      const depth = Math.min(1, Math.max(.25, n.k));
+      const r = (isHover ? 8.5 : isActive ? 7 : 4.6) * depth * (1 + .06 * Math.sin(n.pulse));
+
+      if (isHover || isActive){
+        const g = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, r * 6);
+        g.addColorStop(0, `rgba(226,205,154,${isHover ? .5 : .3})`);
+        g.addColorStop(1, "rgba(226,205,154,0)");
+        ctx.fillStyle = g;
+        ctx.beginPath(); ctx.arc(n.x, n.y, r * 6, 0, Math.PI * 2); ctx.fill();
+      }
+
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
+      ctx.fillStyle = isHover || isActive
+        ? "rgba(248,240,220,.98)"
+        : `rgba(201,169,97,${(.45 + .5 * depth).toFixed(3)})`;
+      ctx.fill();
+
+      if (isActive && !isHover){
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, r + 6 * depth, 0, Math.PI * 2);
+        ctx.strokeStyle = "rgba(201,169,97,.65)";
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+
+      // Roman numeral, only on stars facing us.
+      if (depth > .72){
+        ctx.font = `${Math.round(10 * depth)}px Inter, system-ui, sans-serif`;
+        ctx.fillStyle = `rgba(226,205,154,${((depth - .72) * 2.6).toFixed(3)})`;
+        ctx.textAlign = "left";
+        ctx.fillText(n.book.roman, n.x + r + 7, n.y + 3.5);
+      }
+    }
+  }
+
+  function pick(mx, my){
+    let best = null, bestD = 20;
+    for (const n of nodes){
+      const d = Math.hypot(n.x - mx, n.y - my);
+      if (d < bestD){ bestD = d; best = n; }
+    }
+    return best;
+  }
+
+  function showTip(n){
+    if (!n){ tip.classList.remove("show"); tip.hidden = true; return; }
+    tip.hidden = false;
+    tip.innerHTML =
+      `<span class="tipNum">${n.book.volume}</span>` +
+      `<span class="tipTitle">${n.book.title}</span>` +
+      `<span class="tipTag">${n.book.tagline}</span>`;
+    tip.style.left = `${n.x}px`;
+    tip.style.top  = `${n.y}px`;
+    tip.classList.add("show");
+  }
+
+  canvas.addEventListener("pointermove", e => {
+    const rect = canvas.getBoundingClientRect();
+    const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+
+    if (dragging){
+      const dx = e.clientX - lastX, dy = e.clientY - lastY;
+      if (Math.abs(dx) + Math.abs(dy) > 3) moved = true;
+      targetY += dx * .006;
+      targetX = Math.max(-1.1, Math.min(1.1, targetX + dy * .005));
+      lastX = e.clientX; lastY = e.clientY;
+      return;
+    }
+
+    const n = pick(mx, my);
+    if (n !== hover){
+      hover = n;
+      hoverIndex = n ? n.index : -1;
+      canvas.style.cursor = n ? "pointer" : "grab";
+      showTip(n);
+    } else if (n) {
+      tip.style.left = `${n.x}px`;
+      tip.style.top  = `${n.y}px`;
+    }
   });
 
-  // Don't burn cycles once the hero has scrolled away.
-  if ("IntersectionObserver" in window){
-    new IntersectionObserver(([e]) => {
-      if (e.isIntersecting){ if (!raf) frame(); }
-      else { cancelAnimationFrame(raf); raf = null; }
-    }, {threshold: 0}).observe(canvas);
+  canvas.addEventListener("pointerdown", e => {
+    dragging = true; moved = false;
+    lastX = e.clientX; lastY = e.clientY;
+    stage.classList.add("is-dragging");
+    try { canvas.setPointerCapture(e.pointerId); } catch {}
+  });
+
+  function endDrag(){
+    dragging = false;
+    stage.classList.remove("is-dragging");
   }
+  canvas.addEventListener("pointerup", e => {
+    endDrag();
+    if (!moved && hoverIndex >= 0){
+      show(hoverIndex);
+      restart();
+      document.querySelector(".bookShowcase")
+        .scrollIntoView({behavior: reduceMotion ? "auto" : "smooth", block: "center"});
+    }
+    try { canvas.releasePointerCapture(e.pointerId); } catch {}
+  });
+  canvas.addEventListener("pointercancel", endDrag);
+  canvas.addEventListener("pointerleave", () => {
+    endDrag();
+    hover = null; hoverIndex = -1;
+    showTip(null);
+  });
+
+  size();
+  if (reduceMotion){
+    draw();                       // one static frame
+  } else {
+    whileVisible(canvas, draw);
+  }
+
+  let t;
+  window.addEventListener("resize", () => {
+    clearTimeout(t);
+    t = setTimeout(() => { size(); if (reduceMotion) draw(); }, 180);
+  });
+})();
+
+/* ── Cards lean toward the cursor ─────────────────────────────────────── */
+(function cardTilt(){
+  if (reduceMotion || window.matchMedia("(hover:none)").matches) return;
+  const MAX = 7;   // degrees
+
+  document.querySelectorAll(".themeCard, .note").forEach(card => {
+    card.classList.add("tiltReady");
+
+    card.addEventListener("pointermove", e => {
+      const r = card.getBoundingClientRect();
+      const px = (e.clientX - r.left) / r.width  - .5;
+      const py = (e.clientY - r.top)  / r.height - .5;
+      card.classList.add("is-tilting");
+      card.style.transform =
+        `perspective(900px) rotateX(${(-py * MAX).toFixed(2)}deg) rotateY(${(px * MAX).toFixed(2)}deg) translateY(-6px) scale(1.012)`;
+    });
+
+    card.addEventListener("pointerleave", () => {
+      card.classList.remove("is-tilting");
+      card.style.transform = "";
+    });
+  });
 })();
 
 /* ── Year ─────────────────────────────────────────────────────────────── */
