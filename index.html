@@ -4,86 +4,323 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="description" content="The forthcoming works, themes, lexicon and notebook of Professor Syed Shams-un-Nazar Fatimi — Chitral, Pakistan.">
+  <meta name="theme-color" content="#0a1411">
   <title>S. S. Fatimi — Researcher, Thinker, Writer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Spectral:ital,wght@0,300;0,400;1,300&family=Inter:wght@400;500&family=Amiri:ital,wght@0,400;0,700;1,400&family=Noto+Nastaliq+Urdu:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <script src="script.js" defer></script>
 </head>
 <body>
-  <nav class="nav" aria-label="Primary navigation"><a class="monogram" href="#top">SSF</a><div class="navLinks"><a href="#works">Works</a><a href="#themes">Themes</a><a href="#lexicon">Lexicon</a><a href="#notebook">Notebook</a><a href="#life">Life</a><a href="mailto:ssfatimi@gmail.com">Contact</a></div></nav>
-  <main>
 
-    <section class="hero shell" id="top"><div class="portraitFrame"><img src="assets/portrait.jpg" alt="Portrait of Professor Syed Shams-un-Nazar Fatimi"></div><div class="heroCopy"><p class="eyebrow">Chitral · Pakistan</p><h1>S. S. Fatimi</h1><p class="roles">Learner <i>·</i> Searcher <i>·</i> Researcher <i>·</i> Teacher</p><p class="intro">A lifetime devoted to a single pursuit: <em>to see things as they actually are.</em> He reads the Qur’an with a lexicographer’s patience, the Prophetic tradition with a devotee’s tenderness, and the restless modern mind with uncommon compassion.</p><a class="textLink" href="#works">Explore the forthcoming series <span>↓</span></a></div></section>
+<header class="siteHeader" id="siteHeader">
+  <div class="headerInner">
+    <a class="monogram" href="#top" aria-label="Back to top"><span>SSF</span></a>
+    <nav class="navLinks" aria-label="Primary">
+      <a href="#works">Works</a>
+      <a href="#themes">Themes</a>
+      <a href="#lexicon">Lexicon</a>
+      <a href="#notebook">Notebook</a>
+      <a href="#life">Life</a>
+      <a href="#contact" class="navCta">Contact</a>
+    </nav>
+    <button class="navToggle" id="navToggle" aria-expanded="false" aria-controls="navLinks" aria-label="Open menu"><span></span><span></span></button>
+  </div>
+  <div class="scrollProgress" id="scrollProgress" aria-hidden="true"></div>
+</header>
 
-    <section class="motto shell" aria-labelledby="motto-title"><p class="eyebrow" id="motto-title">A guiding prayer</p><blockquote lang="ar" dir="rtl">اللّٰهُمَّ أَرِنِي حَقَائِقَ الْأَشْيَاءِ كَمَا هِيَ</blockquote><p class="mottoLong" lang="ar" dir="rtl">فِي أَنْفُسِنَا وَالْآفَاقِ وَفَوْقَ مَزْخَرَفِ الصُّوَرِ</p><p class="translation">“O God, show us the realities of things as they truly are — within ourselves, across the horizons, and beyond the ornamentation of appearances.”</p><p class="mottoBody">Grant me the wisdom to perceive reality free from illusion, prejudice, fear, desire, and personal bias—to distinguish appearance from reality, falsehood from truth, and ignorance from wisdom.</p></section>
+<main>
 
-    <section class="pillars shell" aria-labelledby="pillars-title">
-      <p class="eyebrow" id="pillars-title">Four pillars</p>
-      <div class="pillarGrid">
-        <div><h3>Knowledge</h3><p>is Light.</p></div>
-        <div><h3>Thought</h3><p>is Guidance.</p></div>
-        <div><h3>Character</h3><p>is Strength.</p></div>
-        <div><h3>Change</h3><p>is Life.</p></div>
+  <!-- ───────────────────────────── HERO ───────────────────────────── -->
+  <section class="hero band band--ink" id="top">
+    <canvas class="starfield" id="starfield" aria-hidden="true"></canvas>
+    <div class="heroGlow" aria-hidden="true"></div>
+    <div class="shell heroInner">
+      <div class="heroPortrait reveal" data-d="1">
+        <div class="portraitArch">
+          <img src="assets/portrait.jpg" alt="Portrait of Professor Syed Shams-un-Nazar Fatimi">
+        </div>
+        <span class="portraitRule" aria-hidden="true"></span>
       </div>
-      <p class="pillarFoot">“In the search for truth, let humility be our companion and wisdom our destination.”</p>
-    </section>
-
-    <section class="works shell" id="works"><header class="sectionHeader"><div><p class="eyebrow">One series · twelve volumes</p><h2>Forthcoming works</h2></div><p>Writing at the meeting point of revelation, philosophy, and the human condition. Every volume is in preparation.</p></header><div class="bookShowcase"><div class="coverWrap"><img id="bookCover" class="cover" src="assets/books/pleasure.jpg" alt=""><div id="coverPlate" class="coverPlate" hidden><span class="plateRule"></span><p id="plateArabic" lang="ar" dir="rtl"></p><h4 id="plateTitle"></h4><p id="plateTagline"></p><span class="plateRule"></span><small>S. S. Fatimi</small></div></div><article class="bookCopy" aria-live="polite"><div class="bookMeta"><span id="bookVolume"></span><span>In preparation</span></div><h3 id="bookTitle"></h3><p class="tagline" id="bookTagline"></p><p id="bookBlurb"></p><aside id="bookNote"></aside><div class="bookControls"><button id="previousBook" aria-label="Previous book">←</button><div class="dots" id="bookDots" role="tablist" aria-label="Choose a book"></div><button id="nextBook" aria-label="Next book">→</button></div></article></div></section>
-
-    <section class="themes shell" id="themes"><header class="sectionHeader"><div><p class="eyebrow">Lines of inquiry</p><h2>Themes in progress</h2></div><p>The research threads running beneath the series—each one worked out across Arabic, Persian, Urdu and English.</p></header>
-      <div class="themeGrid">
-        <article><p class="noteType">Qur’anic cosmology</p><h3>The Cosmic Tasbīḥ</h3><p lang="ar" dir="rtl" class="arabicText">وَلَٰكِن لَّا تَفْقَهُونَ تَسْبِيحَهُمْ</p><p>On 17:44—the seven heavens, the earth, and all within them glorify Him, “but you do not comprehend their glorification.” The universe may not be silent; our capacity to hear may simply be limited. A lesson in epistemological humility: the cosmos is a symphony of tasbīḥ, and the human soul is learning how to listen.</p><span>Qur’an 17:44 · 24:41 · 13:15 · 41:53</span></article>
-        <article><p class="noteType">The first constitution</p><h3>Ṣaḥīfat al-Madīnah</h3><p lang="ar" dir="rtl" class="arabicText">إِنَّهُمْ أُمَّةٌ وَاحِدَةٌ مِنْ دُونِ النَّاسِ</p><p>A full reading of the sixty-four clauses of the Constitution of Madinah—the first written constitution in human history—drawn up between the Muhājirīn, the Anṣār, the Jews of Yathrib and the surrounding tribes. Its four foundations: unity, justice, coexistence, and freedom of religion.</p><span>Year 1 of the Hijra · 622 CE</span></article>
-        <article><p class="noteType">Quranic odyssey</p><h3>The Quest for Meaning and Beyond</h3><p lang="ar" dir="rtl" class="arabicText">الرِّحْلَةُ القُرْآنِيَّة</p><p>Man is a traveller, and the Qur’an is the map and the compass. Five stations: knowledge (darkness to light), truth (illusion to reality), identity (who am I? — khalīfah), wisdom (data to nūr), and meaning (from “why” to worship). Not a journey upon the earth, but a journey in the self toward God.</p><span>20:114 · 17:81 · 49:13 · 2:269 · 51:56</span></article>
-        <article><p class="noteType">A philosophy of longing</p><h3>Nostalgian Philosophy</h3><p lang="ur" dir="rtl" class="urdu">فلسفۂ حسرت</p><p>Not love of the past, but love of the meaning the past once held. Read across four perspectives—existential, epistemic, aesthetic and spiritual—and through three griefs: ḥasrat of place, of time, and of being. Nostalgia begins where meaning ends.</p><span>A concept note toward the series</span></article>
-        <article><p class="noteType">After Shariati</p><h3>The Four Prisons</h3><p>Nature, history, society, and the self. The first three are external determinants; the fourth—desire, comfort, status, ego—is the deepest and most subtle. Freedom is not the disappearance of these forces but the consciousness that recognises and resists their dominion.</p><span>Ali Shariati · philosophical anthropology</span></article>
-        <article><p class="noteType">Solitude and integrity</p><h3>Ali’s Twenty-Five Years</h3><p>On political deprivation read as a discipline rather than a defeat. Silence as a refusal to legitimise a corrupted throne; loneliness as the price of wisdom. “When you see someone alone, do not think them weak—crowds gather around hypocrisy, but truth stands even in solitude.”</p><span>A study after Dr. Ali Shariati</span></article>
-      </div>
-    </section>
-
-    <section class="lexicon shell" id="lexicon"><header class="sectionHeader"><div><p class="eyebrow">Words he is collecting</p><h2>A working lexicon</h2></div><p>Terms carried across languages, because no single tongue holds the whole of them.</p></header>
-      <dl class="lexGrid">
-        <div><dt>Ataraxia <span lang="el">ἀταραξία</span></dt><dd>Freedom from disturbance. Tranquillity of mind in Epicurean and Stoic thought — <span lang="ur" dir="rtl">سکونِ قلب، طمانیت</span> · <span lang="ar" dir="rtl">طُمَأْنِينَة</span></dd></div>
-        <div><dt>Eleutheromania</dt><dd>An almost frantic longing for freedom; a zeal to escape every constraint — <span lang="ar" dir="rtl">جُنُونُ الحُرِّيَّة</span> · <span lang="fa" dir="rtl">جنونِ آزادی</span></dd></div>
-        <div><dt>Epistemophobia</dt><dd>Fear not of study but of what one might discover — <span lang="ar" dir="rtl">رُهَابُ المَعْرِفَة</span>. Its shallower cousin is <em>sophophobia</em>, the fear of learning itself.</dd></div>
-        <div><dt>Saudade</dt><dd>The presence of an absence. Arabic: <span lang="ar" dir="rtl">حَنِينُ الرُّوح</span> — the longing of the soul. Persian: <span lang="fa" dir="rtl">دلتنگیِ جان</span> — the ache that proves love.</dd></div>
-        <div><dt><span lang="ar" dir="rtl">مُرَاوَغَة</span> — Murāwaghah</dt><dd>Deliberate evasion: ambiguity, delay, selective interpretation and shifting ground, used to avoid accountability without open confrontation. Not always deceit — sometimes only tactics.</dd></div>
-        <div><dt><span lang="ar" dir="rtl">بَاخِع</span> — Bākhiʿ</dt><dd>Grief that consumes the self. A word occurring only twice in the Qur’an, both times of a heart consuming itself with sorrow over others. <span lang="ar" dir="rtl">al-Kahf 18:6 · ash-Shuʿarāʾ 26:3</span></dd></div>
-        <div><dt><span lang="ur" dir="rtl">فن سے بے بہرہ</span></dt><dd>Literally: one to whom art has given no share. The person absorbed by utility and wealth who mocks poetry and the fine arts — the temperament <em>The Pleasure of Learning</em> is written against.</dd></div>
-        <div><dt><span lang="ar" dir="rtl">الرَّاسِخُونَ فِي العِلْم</span></dt><dd>Those firmly rooted in knowledge — set against mere <em>ʿabqariyyah</em>, brilliance. The distinction Volume Ten is built upon.</dd></div>
-      </dl>
-    </section>
-
-    <section class="notebook shell" id="notebook"><header class="sectionHeader"><div><p class="eyebrow">Ideas in formation</p><h2>From the notebook</h2></div><p>Fragments from work currently in progress.</p></header><div class="notes">
-      <article><p class="noteType">The safety valve</p><h3>Why this book exists</h3><p>“When my inner being became a pressure cooker of relentless thoughts, questions, and unspoken burdens, I found only one way to survive: I opened a valve. Through writing, reflection, and conversation with my own soul, I released the steam before it consumed me.”</p><p>“This book is not a literary exercise; it is a breathing space for a crowded soul.”</p><span>Toward <em>My Mind Works as a Pressure Cooker</em></span></article>
-      <article><p class="noteType">Marginalia</p><h3>Even Socrates would not have found peace</h3><p lang="ur" dir="rtl" class="urdu">سقراط و افلاطون بھی آج ہوتے تو ان کا مائنڈ بھی پریشر کوکر ہوتا۔۔۔ اس وقت بھی ان کو قرار نہ تھا۔</p><p>“Were Socrates and Plato alive today, their minds too would be pressure cookers—nor did they have peace even then.”</p></article>
-      <article><p class="noteType">The cauldron of pressure</p><h3>Not every fire destroys</h3><p>“How many minds have grown weary under their own burden, yet expanded the world with the vastness they created. Great ideas are not born in emptiness, but in the furnace of suffering, in the silence of contemplation, and under the pressure of responsibility.”</p><p>So when the boiling of the mind intensifies, do not read it as ruin; it may be the birth-pain of a new truth.</p><span lang="fa" dir="rtl">عقل… دیگِ فشار</span></article>
-      <article><p class="noteType">A note on art</p><h3>Music is revelation, not creation</h3><p>“The true artist does not invent the eternal harmony—he discovers it, listens to it, and reveals it.”</p><p lang="ar" dir="rtl" class="arabicText">الموسيقى وحيٌ لا اختراع</p><p lang="fa" dir="rtl">موسیقی وحی است، نه اختراع</p></article>
-      <article><p class="noteType">A rule of conduct</p><h3>See · Act · Intend</h3><p><strong>See with a divine eye.</strong> <strong>Act with a human heart.</strong> <strong>Do it without an agenda.</strong></p><p>Pure intention, divine view, human action: to look upon creation through the attribute of mercy, to walk the earth as a true human being, and to act for God alone.</p></article>
-      <article><p class="noteType">Iqbal · a working translation</p><h3>The diver and the shore</h3><p>“Deprived of the ocean’s bounty remained that diver who forsook not the shore’s familiar company.”</p><p>The shore is comfort, the crowd, the merely familiar. The ocean’s wealth is the secret, <em>khudī</em>, the pearl in the deep. You cannot reach the deep if you fear leaving the shallow.</p></article>
-      <article><p class="noteType">Rumi · Ghazal 3104</p><h3>Circle the Kaaba of the heart</h3><p lang="fa" dir="rtl">هزار بار پیاده طواف کعبه کنی<br>قبول حق نشود گر دلی بیازاری</p><p>“Though you circle the Kaaba a thousand times on foot, it will not be accepted if you have wounded a heart.” The Kaaba is not stone; it is purpose. To break a heart is to break the House of God.</p></article>
-      <article><p class="noteType">Iqbal · Payām-i-Mashriq</p><h3>One cup, a thousand songs</h3><p lang="fa" dir="rtl">جهان یا رب چه خوش هنگامه دارد<br>همه را مستِ یک پیمانه کردی</p><p>“O Lord, what a wonderful pageant is Thy world! Thou hast made all drunk from a single cup; Thou hast made eye to mingle with eye, but heart from heart and soul from soul Thou hast kept apart.” Unity of source, infinity of expression.</p></article>
-      <article><p class="noteType">Qur’anic lexicon</p><h3><span lang="ar" dir="rtl">بَاخِع</span> — grief that consumes the self</h3><p lang="ar" dir="rtl" class="arabicText">فَلَعَلَّكَ بَاخِعٌ نَّفْسَكَ عَلَىٰ آثَارِهِمْ</p><p>A word occurring only twice in the Qur’an—both times describing a heart consuming itself with sorrow over others.</p><span>al-Kahf 18:6 · ash-Shuʿarāʾ 26:3</span></article>
-    </div></section>
-
-    <section class="life shell" id="life"><header class="sectionHeader"><div><p class="eyebrow">Chitral, Pakistan</p><h2>A life in one pursuit</h2></div><p>Teaching · Training · Learning · Character · Creativity · Critical thinking · Human development</p></header>
-      <div class="lifeGrid">
-        <figure><img src="assets/life.jpg" alt="Professor Syed Shams-un-Nazar Fatimi as a young man and in later years"><figcaption>Then and now — the same question, carried for a lifetime.</figcaption></figure>
-        <div class="lifeCopy">
-          <p>Professor Syed Shams-un-Nazar Fatimi writes from Chitral, in the mountains of northern Pakistan. He describes himself plainly: a learner, a searcher, a researcher, a teacher—an educationist, perhaps.</p>
-          <p>Alongside the series, he is preparing a <strong>Comprehensive Teachers’ &amp; Trainers’ Manual</strong>, written for teachers, trainers and learners alike.</p>
-          <p class="urduKeywords" lang="ur" dir="rtl">تدریس • تربیت • تعلّم • کردار سازی • تخلیقی صلاحیت • تنقیدی فکر • انسانی ترقی</p>
-          <p>Much of this thinking was formed in conversation. He returns often to the <strong>Thinkers’ Forum, Chitral</strong>, built jointly with his friend <strong>Professor Ubaid-ur-Rehman</strong>, and to a companion project on education. Of his friend he writes simply: <em>“I still feel his presence.”</em></p>
-          <blockquote class="lifeQuote">“Truth stays in solitude.”</blockquote>
+      <div class="heroCopy">
+        <p class="eyebrow reveal" data-d="0">Chitral · Pakistan</p>
+        <h1 class="reveal" data-d="1">S.&thinsp;S. Fatimi</h1>
+        <p class="roles reveal" data-d="2"><span>Learner</span><i>·</i><span>Searcher</span><i>·</i><span>Researcher</span><i>·</i><span>Teacher</span></p>
+        <p class="intro reveal" data-d="3">A lifetime devoted to a single pursuit: <em>to see things as they actually are.</em> He reads the Qur’an with a lexicographer’s patience, the Prophetic tradition with a devotee’s tenderness, and the restless modern mind with uncommon compassion.</p>
+        <div class="heroActions reveal" data-d="4">
+          <a class="btn btn--gold" href="#works">Enter the series</a>
+          <a class="btn btn--ghost" href="#contact">Write to him</a>
         </div>
       </div>
-    </section>
+    </div>
+    <a class="scrollHint" href="#prayer" aria-label="Scroll down"><span></span></a>
+  </section>
 
-  </main>
-  <footer>
-    <p>“Wisdom has no last page.”</p>
-    <div class="sig"><strong>Professor Syed Shams-un-Nazar Fatimi</strong><span lang="ur" dir="rtl">پروفیسر سید شمس النظر فاطمی</span><span>Researcher · Thinker · Writer · Chitral, Pakistan</span></div>
-    <a href="mailto:ssfatimi@gmail.com">ssfatimi@gmail.com</a>
+  <!-- ──────────────────────────── PRAYER ──────────────────────────── -->
+  <section class="prayer band band--paper" id="prayer" aria-labelledby="prayer-title">
+    <div class="shell prayerInner">
+      <p class="eyebrow center reveal" id="prayer-title">A guiding prayer</p>
+      <blockquote class="ayah reveal" data-d="1" lang="ar" dir="rtl">اللّٰهُمَّ أَرِنِي حَقَائِقَ الْأَشْيَاءِ كَمَا هِيَ</blockquote>
+      <p class="ayahExt reveal" data-d="2" lang="ar" dir="rtl">فِي أَنْفُسِنَا وَالْآفَاقِ وَفَوْقَ مَزْخَرَفِ الصُّوَرِ</p>
+      <span class="ornament reveal" data-d="3" aria-hidden="true"></span>
+      <p class="translation reveal" data-d="4">“O God, show us the realities of things as they truly are — within ourselves, across the horizons, and beyond the ornamentation of appearances.”</p>
+      <p class="prayerBody reveal" data-d="5">Grant me the wisdom to perceive reality free from illusion, prejudice, fear, desire, and personal bias — to distinguish appearance from reality, falsehood from truth, and ignorance from wisdom.</p>
+    </div>
+  </section>
+
+  <!-- ──────────────────────────── PILLARS ─────────────────────────── -->
+  <section class="pillars band band--ink" aria-labelledby="pillars-title">
+    <div class="shell">
+      <p class="eyebrow center reveal" id="pillars-title">Four pillars</p>
+      <div class="pillarGrid">
+        <div class="pillar reveal" data-d="1"><span class="pillarNum">i</span><h3>Knowledge</h3><p>is Light</p></div>
+        <div class="pillar reveal" data-d="2"><span class="pillarNum">ii</span><h3>Thought</h3><p>is Guidance</p></div>
+        <div class="pillar reveal" data-d="3"><span class="pillarNum">iii</span><h3>Character</h3><p>is Strength</p></div>
+        <div class="pillar reveal" data-d="4"><span class="pillarNum">iv</span><h3>Change</h3><p>is Life</p></div>
+      </div>
+      <p class="pillarFoot reveal" data-d="5">“In the search for truth, let humility be our companion and wisdom our destination.”</p>
+    </div>
+  </section>
+
+  <!-- ───────────────────────────── WORKS ──────────────────────────── -->
+  <section class="works band band--paper" id="works">
+    <div class="shell">
+      <header class="sectionHeader reveal">
+        <div><p class="eyebrow">One series · twelve volumes</p><h2>Forthcoming <em>works</em></h2></div>
+        <p>Writing at the meeting point of revelation, philosophy, and the human condition. Every volume is in preparation.</p>
+      </header>
+
+      <div class="bookShowcase reveal" data-d="1">
+        <div class="coverWrap">
+          <img id="bookCover" class="cover" src="assets/books/prophet.jpg" alt="">
+          <div id="coverPlate" class="coverPlate" hidden>
+            <span class="plateRule"></span>
+            <p id="plateArabic" lang="ar" dir="rtl"></p>
+            <h4 id="plateTitle"></h4>
+            <p id="plateTagline"></p>
+            <span class="plateRule"></span>
+            <small>S. S. Fatimi</small>
+          </div>
+          <span class="coverGild" aria-hidden="true"></span>
+        </div>
+
+        <article class="bookCopy" aria-live="polite">
+          <div class="bookMeta"><span id="bookVolume"></span><span class="status">In preparation</span></div>
+          <h3 id="bookTitle"></h3>
+          <p class="tagline" id="bookTagline"></p>
+          <p class="blurb" id="bookBlurb"></p>
+          <aside id="bookNote"></aside>
+          <div class="bookControls">
+            <button id="previousBook" class="navBtn" aria-label="Previous volume">&#8592;</button>
+            <div class="dots" id="bookDots" role="tablist" aria-label="Choose a volume"></div>
+            <button id="nextBook" class="navBtn" aria-label="Next volume">&#8594;</button>
+          </div>
+        </article>
+      </div>
+
+      <div class="seriesIndexWrap reveal">
+        <p class="eyebrow">The complete series</p>
+        <ol class="seriesIndex" id="seriesIndex"></ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────────────────────── THEMES ─────────────────────────── -->
+  <section class="themes band band--ink" id="themes">
+    <div class="shell">
+      <header class="sectionHeader onInk reveal">
+        <div><p class="eyebrow">Lines of inquiry</p><h2>Themes in <em>progress</em></h2></div>
+        <p>The research threads running beneath the series — each one worked out across Arabic, Persian, Urdu and English.</p>
+      </header>
+      <div class="themeGrid">
+        <article class="themeCard reveal" data-d="1">
+          <p class="noteType">Qur’anic cosmology</p>
+          <h3>The Cosmic Tasbīḥ</h3>
+          <p class="arabicText" lang="ar" dir="rtl">وَلَٰكِن لَّا تَفْقَهُونَ تَسْبِيحَهُمْ</p>
+          <p>On 17:44 — the seven heavens, the earth, and all within them glorify Him, “but you do not comprehend their glorification.” The universe may not be silent; our capacity to hear may simply be limited. A lesson in epistemological humility: the cosmos is a symphony of tasbīḥ, and the human soul is learning how to listen.</p>
+          <span class="cite">Qur’an 17:44 · 24:41 · 13:15 · 41:53</span>
+        </article>
+        <article class="themeCard reveal" data-d="2">
+          <p class="noteType">The first constitution</p>
+          <h3>Ṣaḥīfat al-Madīnah</h3>
+          <p class="arabicText" lang="ar" dir="rtl">إِنَّهُمْ أُمَّةٌ وَاحِدَةٌ مِنْ دُونِ النَّاسِ</p>
+          <p>A full reading of the sixty-four clauses of the Constitution of Madinah — the first written constitution in human history — drawn up between the Muhājirīn, the Anṣār, the Jews of Yathrib and the surrounding tribes. Its four foundations: unity, justice, coexistence, and freedom of religion.</p>
+          <span class="cite">Year 1 of the Hijra · 622 CE</span>
+        </article>
+        <article class="themeCard reveal" data-d="3">
+          <p class="noteType">Quranic odyssey</p>
+          <h3>The Quest for Meaning and Beyond</h3>
+          <p class="arabicText" lang="ar" dir="rtl">الرِّحْلَةُ القُرْآنِيَّة</p>
+          <p>Man is a traveller, and the Qur’an is the map and the compass. Five stations: knowledge (darkness to light), truth (illusion to reality), identity (who am I? — khalīfah), wisdom (data to nūr), and meaning (from “why” to worship). Not a journey upon the earth, but a journey in the self toward God.</p>
+          <span class="cite">20:114 · 17:81 · 49:13 · 2:269 · 51:56</span>
+        </article>
+        <article class="themeCard reveal" data-d="1">
+          <p class="noteType">A philosophy of longing</p>
+          <h3>Nostalgian Philosophy</h3>
+          <p class="urdu" lang="ur" dir="rtl">فلسفۂ حسرت</p>
+          <p>Not love of the past, but love of the meaning the past once held. Read across four perspectives — existential, epistemic, aesthetic and spiritual — and through three griefs: ḥasrat of place, of time, and of being. Nostalgia begins where meaning ends.</p>
+          <span class="cite">A concept note toward the series</span>
+        </article>
+        <article class="themeCard reveal" data-d="2">
+          <p class="noteType">After Shariati</p>
+          <h3>The Four Prisons</h3>
+          <p class="arabicText" lang="fa" dir="rtl">طبیعت · تاریخ · جامعه · خویشتن</p>
+          <p>Nature, history, society, and the self. The first three are external determinants; the fourth — desire, comfort, status, ego — is the deepest and most subtle. Freedom is not the disappearance of these forces but the consciousness that recognises and resists their dominion.</p>
+          <span class="cite">Ali Shariati · philosophical anthropology</span>
+        </article>
+        <article class="themeCard reveal" data-d="3">
+          <p class="noteType">Solitude and integrity</p>
+          <h3>Ali’s Twenty-Five Years</h3>
+          <p class="arabicText" lang="ar" dir="rtl">مَيْدَانُكُمُ الْأَوَّلُ أَنْفُسُكُمْ</p>
+          <p>On political deprivation read as a discipline rather than a defeat. Silence as a refusal to legitimise a corrupted throne; loneliness as the price of wisdom. “When you see someone alone, do not think them weak — crowds gather around hypocrisy, but truth stands even in solitude.”</p>
+          <span class="cite">A study after Dr. Ali Shariati</span>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ──────────────────────────── LEXICON ─────────────────────────── -->
+  <section class="lexicon band band--paper" id="lexicon">
+    <div class="shell">
+      <header class="sectionHeader reveal">
+        <div><p class="eyebrow">Words he is collecting</p><h2>A working <em>lexicon</em></h2></div>
+        <p>Terms carried across languages, because no single tongue holds the whole of them.</p>
+      </header>
+      <dl class="lexGrid">
+        <div class="lexItem reveal" data-d="1"><dt>Ataraxia<span class="lexOrig" lang="el">ἀταραξία</span></dt><dd>Freedom from disturbance. Tranquillity of mind in Epicurean and Stoic thought — <b lang="ur" dir="rtl">سکونِ قلب</b>, <b lang="ar" dir="rtl">طُمَأْنِينَة</b>.</dd></div>
+        <div class="lexItem reveal" data-d="2"><dt>Eleutheromania</dt><dd>An almost frantic longing for freedom; a zeal to escape every constraint — <b lang="ar" dir="rtl">جُنُونُ الحُرِّيَّة</b>, <b lang="fa" dir="rtl">جنونِ آزادی</b>.</dd></div>
+        <div class="lexItem reveal" data-d="1"><dt>Epistemophobia</dt><dd>Fear not of study but of what one might discover — <b lang="ar" dir="rtl">رُهَابُ المَعْرِفَة</b>. Its shallower cousin is <em>sophophobia</em>, the fear of learning itself.</dd></div>
+        <div class="lexItem reveal" data-d="2"><dt>Saudade</dt><dd>The presence of an absence. Arabic <b lang="ar" dir="rtl">حَنِينُ الرُّوح</b>, the longing of the soul; Persian <b lang="fa" dir="rtl">دلتنگیِ جان</b>, the ache that proves love.</dd></div>
+        <div class="lexItem reveal" data-d="1"><dt>Murāwaghah<span class="lexOrig" lang="ar" dir="rtl">مُرَاوَغَة</span></dt><dd>Deliberate evasion: ambiguity, delay, selective interpretation and shifting ground, used to avoid accountability without open confrontation. Not always deceit — sometimes only tactics.</dd></div>
+        <div class="lexItem reveal" data-d="2"><dt>Bākhiʿ<span class="lexOrig" lang="ar" dir="rtl">بَاخِع</span></dt><dd>Grief that consumes the self. A word occurring only twice in the Qur’an, both times of a heart consuming itself with sorrow over others — al-Kahf 18:6, ash-Shuʿarāʾ 26:3.</dd></div>
+        <div class="lexItem reveal" data-d="1"><dt>Fann se bē-bahra<span class="lexOrig" lang="ur" dir="rtl">فن سے بے بہرہ</span></dt><dd>Literally: one to whom art has given no share. The person absorbed by utility and wealth who mocks poetry and the fine arts — the temperament <em>The Pleasure of Learning</em> is written against.</dd></div>
+        <div class="lexItem reveal" data-d="2"><dt>Ar-Rāsikhūn fī al-ʿIlm<span class="lexOrig" lang="ar" dir="rtl">الرَّاسِخُونَ فِي العِلْم</span></dt><dd>Those firmly rooted in knowledge — set against mere <em>ʿabqariyyah</em>, brilliance. The distinction Volume Ten is built upon.</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- ──────────────────────────── NOTEBOOK ────────────────────────── -->
+  <section class="notebook band band--ink" id="notebook">
+    <div class="shell">
+      <header class="sectionHeader onInk reveal">
+        <div><p class="eyebrow">Ideas in formation</p><h2>From the <em>notebook</em></h2></div>
+        <p>Fragments from work currently in progress — kept as they were written.</p>
+      </header>
+      <div class="noteGrid">
+        <article class="note note--wide reveal" data-d="1">
+          <p class="noteType">The safety valve</p>
+          <h3>Why this book exists</h3>
+          <p class="lede">“When my inner being became a pressure cooker of relentless thoughts, questions, and unspoken burdens, I found only one way to survive: I opened a valve. Through writing, reflection, and conversation with my own soul, I released the steam before it consumed me.”</p>
+          <p>“This book is not a literary exercise; it is a breathing space for a crowded soul, a valve through which the pressure of existence finds release before it turns into ruin.”</p>
+          <span class="cite">Toward <em>My Mind Works as a Pressure Cooker</em></span>
+        </article>
+        <article class="note reveal" data-d="2">
+          <p class="noteType">Marginalia</p>
+          <h3>Even Socrates would not have found peace</h3>
+          <p class="urdu" lang="ur" dir="rtl">سقراط و افلاطون بھی آج ہوتے تو ان کا مائنڈ بھی پریشر کوکر ہوتا۔۔۔ اس وقت بھی ان کو قرار نہ تھا۔</p>
+          <p>“Were Socrates and Plato alive today, their minds too would be pressure cookers — nor did they have peace even then.”</p>
+        </article>
+        <article class="note reveal" data-d="1">
+          <p class="noteType">The cauldron of pressure</p>
+          <h3>Not every fire destroys</h3>
+          <p>“How many minds have grown weary under their own burden, yet expanded the world with the vastness they created. Great ideas are not born in emptiness, but in the furnace of suffering, in the silence of contemplation, and under the pressure of responsibility.”</p>
+          <span class="cite" lang="fa" dir="rtl">عقل… دیگِ فشار</span>
+        </article>
+        <article class="note reveal" data-d="2">
+          <p class="noteType">A note on art</p>
+          <h3>Music is revelation, not creation</h3>
+          <p>“The true artist does not invent the eternal harmony — he discovers it, listens to it, and reveals it.”</p>
+          <p class="arabicText" lang="ar" dir="rtl">الموسيقى وحيٌ لا اختراع</p>
+          <p class="arabicText" lang="fa" dir="rtl">موسیقی وحی است، نه اختراع</p>
+        </article>
+        <article class="note note--rule reveal" data-d="3">
+          <p class="noteType">A rule of conduct</p>
+          <h3>See · Act · Intend</h3>
+          <p class="ruleLines"><b>See with a divine eye.</b><b>Act with a human heart.</b><b>Do it without an agenda.</b></p>
+          <p>Pure intention, divine view, human action: to look upon creation through the attribute of mercy, to walk the earth as a true human being, and to act for God alone.</p>
+        </article>
+        <article class="note reveal" data-d="1">
+          <p class="noteType">Iqbal · a working translation</p>
+          <h3>The diver and the shore</h3>
+          <p class="lede">“Deprived of the ocean’s bounty remained that diver who forsook not the shore’s familiar company.”</p>
+          <p>The shore is comfort, the crowd, the merely familiar. The ocean’s wealth is the secret, <em>khudī</em>, the pearl in the deep. You cannot reach the deep if you fear leaving the shallow.</p>
+        </article>
+        <article class="note reveal" data-d="2">
+          <p class="noteType">Rumi · Ghazal 3104</p>
+          <h3>Circle the Kaaba of the heart</h3>
+          <p class="arabicText" lang="fa" dir="rtl">هزار بار پیاده طواف کعبه کنی<br>قبول حق نشود گر دلی بیازاری</p>
+          <p>“Though you circle the Kaaba a thousand times on foot, it will not be accepted if you have wounded a heart.” The Kaaba is not stone; it is purpose. To break a heart is to break the House of God.</p>
+        </article>
+        <article class="note reveal" data-d="3">
+          <p class="noteType">Iqbal · Payām-i-Mashriq</p>
+          <h3>One cup, a thousand songs</h3>
+          <p class="arabicText" lang="fa" dir="rtl">جهان یا رب چه خوش هنگامه دارد<br>همه را مستِ یک پیمانه کردی</p>
+          <p>“Thou hast made all drunk from a single cup; Thou hast made eye to mingle with eye, but heart from heart and soul from soul Thou hast kept apart.” Unity of source, infinity of expression.</p>
+        </article>
+        <article class="note reveal" data-d="1">
+          <p class="noteType">Qur’anic lexicon</p>
+          <h3><span lang="ar" dir="rtl">بَاخِع</span> — grief that consumes the self</h3>
+          <p class="arabicText" lang="ar" dir="rtl">فَلَعَلَّكَ بَاخِعٌ نَّفْسَكَ عَلَىٰ آثَارِهِمْ</p>
+          <p>A word occurring only twice in the Qur’an — both times describing a heart consuming itself with sorrow over others.</p>
+          <span class="cite">al-Kahf 18:6 · ash-Shuʿarāʾ 26:3</span>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ────────────────────────────── LIFE ──────────────────────────── -->
+  <section class="life band band--paper" id="life">
+    <div class="shell">
+      <header class="sectionHeader reveal">
+        <div><p class="eyebrow">Chitral · Pakistan</p><h2>A life in one <em>pursuit</em></h2></div>
+        <p>Teaching · Training · Learning · Character · Creativity · Critical thinking · Human development</p>
+      </header>
+      <div class="lifeGrid">
+        <figure class="reveal" data-d="1">
+          <div class="lifeFrame"><img src="assets/life.jpg" alt="Professor Syed Shams-un-Nazar Fatimi as a young man and in later years"></div>
+          <figcaption>Then and now — the same question, carried for a lifetime.</figcaption>
+        </figure>
+        <div class="lifeCopy">
+          <p class="reveal" data-d="2">Professor Syed Shams-un-Nazar Fatimi writes from Chitral, in the mountains of northern Pakistan. He describes himself plainly: a learner, a searcher, a researcher, a teacher — an educationist, perhaps.</p>
+          <p class="reveal" data-d="3">Alongside the series he is preparing a <b>Comprehensive Teachers’ &amp; Trainers’ Manual</b>, written for teachers, trainers and learners alike.</p>
+          <p class="urduKeywords reveal" data-d="4" lang="ur" dir="rtl">تدریس • تربیت • تعلّم • کردار سازی • تخلیقی صلاحیت • تنقیدی فکر • انسانی ترقی</p>
+          <p class="reveal" data-d="5">Much of this thinking was formed in conversation. He returns often to the <b>Thinkers’ Forum, Chitral</b>, built jointly with his friend <b>Professor Ubaid-ur-Rehman</b>, and to a companion project on education. Of his friend he writes simply: <em>“I still feel his presence.”</em></p>
+          <blockquote class="lifeQuote reveal" data-d="6">“Truth stays in solitude.”</blockquote>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────────────────────── CONTACT ────────────────────────── -->
+  <section class="contact band band--ink" id="contact">
+    <div class="shell contactInner">
+      <p class="eyebrow center reveal">Correspondence</p>
+      <h2 class="reveal" data-d="1">Write to him</h2>
+      <p class="contactLede reveal" data-d="2">Readers, students, publishers and fellow seekers are all welcome. He answers in English, Urdu, Arabic and Persian.</p>
+      <div class="contactActions reveal" data-d="3">
+        <a class="btn btn--gold" href="mailto:ssfatimi@gmail.com?subject=Regarding%20your%20forthcoming%20works">Open in mail app</a>
+        <button class="btn btn--ghost" id="copyEmail" data-email="ssfatimi@gmail.com">Copy address</button>
+      </div>
+      <a class="emailPlain reveal" data-d="4" href="mailto:ssfatimi@gmail.com">ssfatimi@gmail.com</a>
+      <p class="copyNote" id="copyNote" role="status" aria-live="polite"></p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="band band--ink">
+  <div class="shell footInner">
+    <p class="footQuote">“Wisdom has no last page.”</p>
+    <span class="ornament" aria-hidden="true"></span>
+    <div class="sig">
+      <strong>Professor Syed Shams-un-Nazar Fatimi</strong>
+      <span lang="ur" dir="rtl">پروفیسر سید شمس النظر فاطمی</span>
+      <span class="sigMeta">Researcher · Thinker · Writer · Chitral, Pakistan</span>
+    </div>
     <small>© <span id="year"></span> S. S. Fatimi</small>
-  </footer>
+  </div>
+</footer>
+
 </body>
 </html>
